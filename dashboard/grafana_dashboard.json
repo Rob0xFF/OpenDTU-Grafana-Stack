@@ -35,6 +35,8 @@
             "mode": "fixed"
           },
           "mappings": [],
+          "max": 160,
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -60,10 +62,10 @@
       },
       "id": 10,
       "options": {
-        "colorMode": "background",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
+        "displayMode": "gradient",
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "orientation": "horizontal",
         "reduceOptions": {
           "calcs": [
             "last"
@@ -71,7 +73,12 @@
           "fields": "",
           "values": false
         },
-        "textMode": "value_and_name"
+        "showUnfilled": true,
+        "text": {
+          "titleSize": 50,
+          "valueSize": 100
+        },
+        "valueMode": "color"
       },
       "pluginVersion": "9.5.2",
       "targets": [
@@ -81,7 +88,7 @@
             "uid": "PAA1BB50C6C315C52"
           },
           "key": "Q-e61c3a3b-2bed-48d5-ad9c-17f0724fd382-0",
-          "query": "from(bucket: \"telegraf/day\")\n  |> range(start: -1d)\n  |> filter(fn: (r) => r._measurement =~ /mqtt*/)\n  |> filter(fn: (r) => r._field == \"power\")\n  |> filter(fn: (r) => r.channel == \"0\")\n  |> truncateTimeColumn(unit: 2m)\n  |> hourSelection(start: 4, stop: 22)\n  \n\n",
+          "query": "from(bucket: \"telegraf/day\")\n  |> range(start: -1d)\n  |> filter(fn: (r) => r._measurement =~ /mqtt*/)\n  |> filter(fn: (r) => r._field == \"power\")\n  |> filter(fn: (r) => r.channel == \"0\")\n  |> truncateTimeColumn(unit: 1m)\n  |> hourSelection(start: 4, stop: 22)\n  \n\n",
           "refId": "A"
         }
       ],
@@ -124,7 +131,7 @@
           }
         }
       ],
-      "type": "stat"
+      "type": "bargauge"
     },
     {
       "datasource": {
@@ -185,7 +192,7 @@
             "uid": "PAA1BB50C6C315C52"
           },
           "key": "Q-e61c3a3b-2bed-48d5-ad9c-17f0724fd382-0",
-          "query": "from(bucket: \"telegraf/day\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement =~ /mqtt*/)\n  |> filter(fn: (r) => r._field == \"yieldday\")\n  |> filter(fn: (r) => r.channel == \"0\")\n  |> truncateTimeColumn(unit: 20m)\n  |> last()\n\n",
+          "query": "from(bucket: \"telegraf/day\")\n  |> range(start: v.timeRangeStart, stop: if now() < v.timeRangeStop then now() else v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement =~ /mqtt*/)\n  |> filter(fn: (r) => r._field == \"yieldday\")\n  |> filter(fn: (r) => r.channel == \"0\")\n  |> aggregateWindow(every: 24h, fn: last)\n  |> last()\n\n",
           "refId": "A"
         }
       ],
@@ -288,7 +295,7 @@
             "uid": "PAA1BB50C6C315C52"
           },
           "key": "Q-e61c3a3b-2bed-48d5-ad9c-17f0724fd382-0",
-          "query": "from(bucket: \"telegraf/day\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement =~ /mqtt*/)\n  |> filter(fn: (r) => r._field == \"yieldtotal\")\n  |> filter(fn: (r) => r.channel == \"0\")\n  |> truncateTimeColumn(unit: 20m)\n  |> last()\n\n",
+          "query": "from(bucket: \"telegraf/day\")\n  |> range(start: v.timeRangeStart, stop: if now() < v.timeRangeStop then now() else v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement =~ /mqtt*/)\n  |> filter(fn: (r) => r._field == \"yieldtotal\")\n  |> filter(fn: (r) => r.channel == \"0\")\n  |> aggregateWindow(every: 24h, fn: last)\n  |> last()\n\n\n",
           "refId": "A"
         }
       ],
@@ -350,15 +357,15 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 12,
-            "gradientMode": "opacity",
+            "fillOpacity": 100,
+            "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
               "viz": false
             },
             "lineInterpolation": "linear",
-            "lineWidth": 2,
+            "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
@@ -367,14 +374,12 @@
             "spanNulls": false,
             "stacking": {
               "group": "A",
-              "mode": "none"
+              "mode": "normal"
             },
             "thresholdsStyle": {
               "mode": "off"
             }
           },
-          "decimals": 1,
-          "displayName": "Alle",
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -388,24 +393,20 @@
                 "value": 80
               }
             ]
-          },
-          "unit": "watt"
+          }
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 11,
+        "h": 15,
         "w": 24,
         "x": 0,
         "y": 5
       },
-      "id": 7,
+      "id": 12,
       "options": {
         "legend": {
-          "calcs": [
-            "last",
-            "max"
-          ],
+          "calcs": [],
           "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
@@ -415,6 +416,7 @@
           "sort": "none"
         }
       },
+      "pluginVersion": "9.5.2",
       "targets": [
         {
           "datasource": {
@@ -422,44 +424,46 @@
             "uid": "PAA1BB50C6C315C52"
           },
           "key": "Q-e61c3a3b-2bed-48d5-ad9c-17f0724fd382-0",
-          "query": "from(bucket: \"telegraf/day\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement =~ /mqtt*/)\n  |> filter(fn: (r) => r._field == \"power\")\n  |> filter(fn: (r) => r.channel == \"0\")\n  |> truncateTimeColumn(unit: 2m)\n\n",
+          "query": "from(bucket: \"telegraf/day\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement =~ /mqtt*/)\n  |> filter(fn: (r) => r._field == \"power\")\n  |> filter(fn: (r) => r.channel == \"0\")\n  |> truncateTimeColumn(unit: 1m)\n\n",
           "refId": "A"
         }
       ],
       "title": "Leistung",
       "transformations": [
         {
+          "disabled": true,
           "id": "calculateField",
           "options": {
             "mode": "reduceRow",
             "reduce": {
               "include": [
+                "power {channel=\"0\", name=\"mqtt_consumer\", serial=\"112483195771\"}",
                 "power {channel=\"0\", name=\"mqtt_consumer\", serial=\"114491119458\"}",
-                "power {channel=\"0\", name=\"mqtt_consumer\", serial=\"112483195445\"}",
-                "power {channel=\"0\", name=\"mqtt_consumer\", serial=\"112483195771\"}"
+                "power {channel=\"0\", name=\"mqtt_consumer\", serial=\"112483195445\"}"
               ],
               "reducer": "sum"
-            }
+            },
+            "replaceFields": false
           }
         },
         {
           "id": "renameByRegex",
           "options": {
-            "regex": "(.*{channel=\"0\", name=\"mqtt_consumer\", serial=\"114491119458\"})",
+            "regex": "(.*{channel=\"0\", serial=\"114491119458\"})",
             "renamePattern": "Küche"
           }
         },
         {
           "id": "renameByRegex",
           "options": {
-            "regex": "(.*{channel=\"0\", name=\"mqtt_consumer\", serial=\"112483195445\"})",
+            "regex": "(.*{channel=\"0\", serial=\"112483195445\"})",
             "renamePattern": "Schlafzimmer"
           }
         },
         {
           "id": "renameByRegex",
           "options": {
-            "regex": "(.*{channel=\"0\", name=\"mqtt_consumer\", serial=\"112483195771\"})",
+            "regex": "(.*{channel=\"0\", serial=\"112483195771\"})",
             "renamePattern": "Gästezimmer"
           }
         }
@@ -475,14 +479,14 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "mode": "fixed"
           },
           "custom": {
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
-            "fillOpacity": 80,
+            "fillOpacity": 100,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
@@ -513,20 +517,33 @@
           },
           "unit": "watth"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "time:DD.MM."
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 10,
-        "w": 24,
+        "w": 12,
         "x": 0,
-        "y": 16
+        "y": 20
       },
       "id": 8,
       "options": {
         "barRadius": 0,
-        "barWidth": 0.69,
+        "barWidth": 0.0357142857142857,
         "fullHighlight": false,
-        "groupWidth": 0.24,
+        "groupWidth": 0.15,
         "legend": {
           "calcs": [],
           "displayMode": "list",
@@ -534,7 +551,7 @@
           "showLegend": true
         },
         "orientation": "auto",
-        "showValue": "auto",
+        "showValue": "never",
         "stacking": "none",
         "tooltip": {
           "mode": "single",
@@ -551,11 +568,11 @@
             "uid": "PAA1BB50C6C315C52"
           },
           "key": "Q-e61c3a3b-2bed-48d5-ad9c-17f0724fd382-0",
-          "query": "from(bucket: \"telegraf/day\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement =~ /mqtt*/)\n  |> filter(fn: (r) => r._field == \"yieldday\")\n  |> filter(fn: (r) => r.channel == \"0\")\n  |> truncateTimeColumn(unit: 1d)\n\n\n\n\n",
+          "query": "from(bucket: \"telegraf/day\")\n  |> range(start: -28, stop: now())\n  |> filter(fn: (r) => r._measurement =~ /mqtt*/)\n  |> filter(fn: (r) => r._field == \"yieldday\")\n  |> filter(fn: (r) => r.channel == \"0\")\n  |> truncateTimeColumn(unit: 1d)\n\n\n\n\n",
           "refId": "A"
         }
       ],
-      "title": "Ertrag täglich",
+      "title": "Täglicher Ertrag letzte 4 Wochen",
       "transformations": [
         {
           "id": "calculateField",
@@ -568,28 +585,130 @@
                 "yieldday {channel=\"0\", name=\"mqtt_consumer\", serial=\"112483195771\"}"
               ],
               "reducer": "sum"
+            },
+            "replaceFields": true
+          }
+        }
+      ],
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "PAA1BB50C6C315C52"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 100,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
             }
-          }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "watth"
         },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*{channel=\"0\", name=\"mqtt_consumer\", serial=\"114491119458\"})",
-            "renamePattern": "Küche"
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "time:WW"
+              }
+            ]
           }
+        ]
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 12,
+        "y": 20
+      },
+      "id": 13,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.0192307692307692,
+        "fullHighlight": false,
+        "groupWidth": 0.15,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
         },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*{channel=\"0\", name=\"mqtt_consumer\", serial=\"112483195445\"})",
-            "renamePattern": "Schlafzimmer"
-          }
+        "orientation": "auto",
+        "showValue": "never",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
         },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "9.5.1",
+      "targets": [
         {
-          "id": "renameByRegex",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "PAA1BB50C6C315C52"
+          },
+          "key": "Q-e61c3a3b-2bed-48d5-ad9c-17f0724fd382-0",
+          "query": "from(bucket: \"telegraf/day\")\n  |> range(start: -365, stop: now())\n  |> filter(fn: (r) => r._measurement =~ /mqtt*/)\n  |> filter(fn: (r) => r._field == \"yieldday\")\n  |> filter(fn: (r) => r.channel == \"0\")\n  |> truncateTimeColumn(unit: 1w)\n\n\n\n\n",
+          "refId": "A"
+        }
+      ],
+      "title": "Wöchentlicher Ertrag letztes Jahr (rollierend)",
+      "transformations": [
+        {
+          "id": "calculateField",
           "options": {
-            "regex": "(.*{channel=\"0\", name=\"mqtt_consumer\", serial=\"112483195771\"})",
-            "renamePattern": "Gästezimmer"
+            "mode": "reduceRow",
+            "reduce": {
+              "include": [
+                "yieldday {channel=\"0\", name=\"mqtt_consumer\", serial=\"114491119458\"}",
+                "yieldday {channel=\"0\", name=\"mqtt_consumer\", serial=\"112483195445\"}",
+                "yieldday {channel=\"0\", name=\"mqtt_consumer\", serial=\"112483195771\"}"
+              ],
+              "reducer": "sum"
+            },
+            "replaceFields": true
           }
         }
       ],
@@ -601,56 +720,16 @@
   "style": "dark",
   "tags": [],
   "templating": {
-    "list": [
-      {
-        "hide": 2,
-        "name": "InverterWest",
-        "query": "112483195445",
-        "skipUrlSync": false,
-        "type": "constant"
-      },
-      {
-        "hide": 2,
-        "name": "InverterEast",
-        "query": "114491119458",
-        "skipUrlSync": false,
-        "type": "constant"
-      },
-      {
-        "current": {
-          "selected": false,
-          "text": "telegraf/day",
-          "value": "telegraf/day"
-        },
-        "datasource": {
-          "type": "influxdb",
-          "uid": "PAA1BB50C6C315C52"
-        },
-        "definition": "//Bucketfilter to filter only buckets beginning with name telegraf..\r\nbucketfilter = /telegraf.*/\r\n\r\nbuckets()\r\n  |> filter(fn: (r) => r.name =~ bucketfilter)\r\n  //convert retentionperiod from nanosecond to days\r\n  |> map(fn: (r) => ({r with \r\n    retentionPeriodinDays: r.retentionPeriod / 86400000000000}) \r\n  )\r\n  //replace retentionpolicy infinity with a high number in NS\r\n  |> map(fn: (r) => ({r with\r\n    retentionPeriod: if r.retentionPeriod == 0 then 999999999999999999\r\n    else r.retentionPeriod})\r\n  )\r\n  //calculate the duration from \"to\" and \"from\" timespan and convert it to nanosecond\r\n  |> map(fn: (r) => ({r with \r\n    DashboardDurationinNS: (${__to} - ${__from}) * 1000000})\r\n  )\r\n  |> filter(fn: (r) => \r\n    r.DashboardDurationinNS <= r.retentionPeriod and\r\n    r.retentionPeriod >= uint(v: now()) - uint(v: ${__from} * 1000000)\r\n  )\r\n  |> sort(columns: [\"retentionPeriod\"], desc: false)\r\n  |> limit(n: 1)\r\n  |> keep(columns: [\"name\"]) //remove all fields except for \"name\"",
-        "description": "All data stored by telegraf with downsampled data",
-        "hide": 0,
-        "includeAll": false,
-        "label": "",
-        "multi": false,
-        "name": "telegraf_all",
-        "options": [],
-        "query": "//Bucketfilter to filter only buckets beginning with name telegraf..\r\nbucketfilter = /telegraf.*/\r\n\r\nbuckets()\r\n  |> filter(fn: (r) => r.name =~ bucketfilter)\r\n  //convert retentionperiod from nanosecond to days\r\n  |> map(fn: (r) => ({r with \r\n    retentionPeriodinDays: r.retentionPeriod / 86400000000000}) \r\n  )\r\n  //replace retentionpolicy infinity with a high number in NS\r\n  |> map(fn: (r) => ({r with\r\n    retentionPeriod: if r.retentionPeriod == 0 then 999999999999999999\r\n    else r.retentionPeriod})\r\n  )\r\n  //calculate the duration from \"to\" and \"from\" timespan and convert it to nanosecond\r\n  |> map(fn: (r) => ({r with \r\n    DashboardDurationinNS: (${__to} - ${__from}) * 1000000})\r\n  )\r\n  |> filter(fn: (r) => \r\n    r.DashboardDurationinNS <= r.retentionPeriod and\r\n    r.retentionPeriod >= uint(v: now()) - uint(v: ${__from} * 1000000)\r\n  )\r\n  |> sort(columns: [\"retentionPeriod\"], desc: false)\r\n  |> limit(n: 1)\r\n  |> keep(columns: [\"name\"]) //remove all fields except for \"name\"",
-        "refresh": 2,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
-        "type": "query"
-      }
-    ]
+    "list": []
   },
   "time": {
     "from": "now/d",
-    "to": "now"
+    "to": "now/d"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Fensterbrettsolar",
   "uid": "a966bdab-a12b-4b07-b491-3a62941ca4c8",
-  "version": 7,
+  "version": 22,
   "weekStart": ""
 }
