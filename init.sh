@@ -57,4 +57,10 @@ echo "##### Updating grafana datasource with new values from env"
 sed -i 's,\[TOKEN\],'$auth_token', g' ./grafana/provisioning/datasources/default.yaml
 sed -i 's,\[ORGANIZATION\],'$GRAFANA_ORG_NAME', g' ./grafana/provisioning/datasources/default.yaml
 
+sudo chown -R 472:472 /home/umbrel/OpenDTU-Grafana-Stack/grafana/var/lib
+sudo chmod -R 775 /home/umbrel/OpenDTU-Grafana-Stack/grafana/var/lib
+
+sudo chown -R 472:472 /home/umbrel/OpenDTU-Grafana-Stack/grafana/provisioning/datasources
+sudo chmod -R 775 /home/umbrel/OpenDTU-Grafana-Stack/grafana/provisioning/datasources
+
 echo $"##### Done, You now can start the stack with 'docker compose up -d'"

@@ -1,0 +1,28 @@
+# openDTU Grafana Stack Startup Service
+# Installed at /etc/systemd/system/opendtu.service
+
+[Unit]
+Description=openDTU Grafana Stack Startup Service
+Wants=network-online.target
+After=network-online.target
+Requires=umbrel.service
+After=umbrel.service
+Requires=docker.service
+After=docker.service
+StartLimitIntervalSec=0 # This prevents us hitting restart rate limits and ensures we keep restarting indefinitely.
+
+[Service]
+WorkingDirectory=/home/umbrel/OpenDTU-Grafana-Stack
+Type=simple
+TimeoutStartSec=0
+TimeoutStopSec=1min
+ExecStartPre=/bin/sleep 60
+ExecStart=/usr/bin/docker compose up
+ExecStop=/usr/bin/docker compose down
+StandardOutput=syslog
+StandardError=syslog
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
