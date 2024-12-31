@@ -90,39 +90,34 @@
       "title": "Gesamtleistung",
       "transformations": [
         {
+          "id": "joinByField",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "power {channel=\"0\", name=\"mqtt_consumer\", serial=\"112483195445\"}": "Schlafzimmer",
+              "power {channel=\"0\", name=\"mqtt_consumer\", serial=\"112483195771\"}": "Gästezimmer",
+              "power {channel=\"0\", name=\"mqtt_consumer\", serial=\"114491119458\"}": "Küche"
+            }
+          }
+        },
+        {
           "id": "calculateField",
           "options": {
             "mode": "reduceRow",
             "reduce": {
               "include": [
-                "power {channel=\"0\", name=\"mqtt_consumer\", serial=\"114491119458\"}",
-                "power {channel=\"0\", name=\"mqtt_consumer\", serial=\"112483195445\"}",
-                "power {channel=\"0\", name=\"mqtt_consumer\", serial=\"112483195771\"}"
+                "Schlafzimmer",
+                "Gästezimmer",
+                "Küche"
               ],
               "reducer": "sum"
             },
             "replaceFields": true
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*{channel=\"0\", name=\"mqtt_consumer\", serial=\"114491119458\"})",
-            "renamePattern": "40W Küche"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*{channel=\"0\", name=\"mqtt_consumer\", serial=\"112483195445\"})",
-            "renamePattern": "60W Schlafzimmer"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*{channel=\"0\", name=\"mqtt_consumer\", serial=\"112483195771\"})",
-            "renamePattern": "60W Gästezimmer"
           }
         }
       ],
@@ -187,45 +182,37 @@
             "uid": "PAA1BB50C6C315C52"
           },
           "key": "Q-e61c3a3b-2bed-48d5-ad9c-17f0724fd382-0",
-          "query": "from(bucket: \"telegraf/day\")\n  |> range(start: v.timeRangeStart, stop: if now() < v.timeRangeStop then now() else v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement =~ /mqtt*/)\n  |> filter(fn: (r) => r._field == \"yieldday\")\n  |> filter(fn: (r) => r.channel == \"0\")\n  |> aggregateWindow(every: 24h, fn: last)\n  |> last()\n\n",
+          "query": "from(bucket: \"telegraf/day\")\n  |> range(start: v.timeRangeStart, stop: if now() < v.timeRangeStop then now() else v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement =~ /mqtt*/)\n  |> filter(fn: (r) => r._field == \"yieldday\")\n  |> filter(fn: (r) => r.channel == \"0\")\n  |> aggregateWindow(every: 48h, fn: last)\n  |> group(columns: [\"serial\"])\n  |> last()\n  |> pivot(rowKey: [], columnKey: [\"serial\"], valueColumn: \"_value\")\n\n",
           "refId": "A"
         }
       ],
       "title": "Ertrag heute",
       "transformations": [
         {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "112483195445": "Schlafzimmer",
+              "112483195771": "Gästezimmer",
+              "114491119458": "Küche",
+              "Total": ""
+            }
+          }
+        },
+        {
           "id": "calculateField",
           "options": {
             "mode": "reduceRow",
             "reduce": {
               "include": [
-                "yieldday {channel=\"0\", name=\"mqtt_consumer\", serial=\"114491119458\"}",
-                "yieldday {channel=\"0\", name=\"mqtt_consumer\", serial=\"112483195445\"}",
-                "yieldday {channel=\"0\", name=\"mqtt_consumer\", serial=\"112483195771\"}"
+                "Schlafzimmer",
+                "Gästezimmer",
+                "Küche"
               ],
               "reducer": "sum"
             }
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*{channel=\"0\", name=\"mqtt_consumer\", serial=\"114491119458\"})",
-            "renamePattern": "Küche"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*{channel=\"0\", name=\"mqtt_consumer\", serial=\"112483195445\"})",
-            "renamePattern": "Schlafzimmer"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*{channel=\"0\", name=\"mqtt_consumer\", serial=\"112483195771\"})",
-            "renamePattern": "Gästezimmer"
           }
         }
       ],
@@ -290,45 +277,37 @@
             "uid": "PAA1BB50C6C315C52"
           },
           "key": "Q-e61c3a3b-2bed-48d5-ad9c-17f0724fd382-0",
-          "query": "from(bucket: \"telegraf/day\")\n  |> range(start: v.timeRangeStart, stop: if now() < v.timeRangeStop then now() else v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement =~ /mqtt*/)\n  |> filter(fn: (r) => r._field == \"yieldtotal\")\n  |> filter(fn: (r) => r.channel == \"0\")\n  |> aggregateWindow(every: 48h, fn: last)\n  |> last()\n\n\n",
+          "query": "from(bucket: \"telegraf/day\")\n  |> range(start: v.timeRangeStart, stop: if now() < v.timeRangeStop then now() else v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement =~ /mqtt*/)\n  |> filter(fn: (r) => r._field == \"yieldtotal\")\n  |> filter(fn: (r) => r.channel == \"0\")\n  |> aggregateWindow(every: 48h, fn: last)\n  |> group(columns: [\"serial\"])\n  |> last()\n  |> pivot(rowKey:[], columnKey: [\"serial\"], valueColumn: \"_value\")\n\n\n",
           "refId": "A"
         }
       ],
       "title": "Ertrag gesamt",
       "transformations": [
         {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "112483195445": "Schlafzimmer",
+              "112483195771": "Gästezimmer",
+              "114491119458": "Küche",
+              "Total": "Gesamt"
+            }
+          }
+        },
+        {
           "id": "calculateField",
           "options": {
             "mode": "reduceRow",
             "reduce": {
               "include": [
-                "yieldtotal {channel=\"0\", name=\"mqtt_consumer\", serial=\"114491119458\"}",
-                "yieldtotal {channel=\"0\", name=\"mqtt_consumer\", serial=\"112483195445\"}",
-                "yieldtotal {channel=\"0\", name=\"mqtt_consumer\", serial=\"112483195771\"}"
+                "Schlafzimmer",
+                "Gästezimmer",
+                "Küche"
               ],
               "reducer": "sum"
             }
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*{channel=\"0\", name=\"mqtt_consumer\", serial=\"114491119458\"})",
-            "renamePattern": "Küche"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*{channel=\"0\", name=\"mqtt_consumer\", serial=\"112483195445\"})",
-            "renamePattern": "Schlafzimmer"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*{channel=\"0\", name=\"mqtt_consumer\", serial=\"112483195771\"})",
-            "renamePattern": "Gästezimmer"
           }
         }
       ],
@@ -336,8 +315,8 @@
     },
     {
       "datasource": {
-        "type": "influxdb",
-        "uid": "PAA1BB50C6C315C52"
+        "type": "datasource",
+        "uid": "-- Mixed --"
       },
       "description": "",
       "fieldConfig": {
@@ -393,7 +372,59 @@
           },
           "unit": "watt"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Sonnenstand"
+            },
+            "properties": [
+              {
+                "id": "custom.axisSoftMin",
+                "value": 0
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.gradientMode",
+                "value": "opacity"
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    10,
+                    10
+                  ],
+                  "fill": "dash"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "custom.scaleDistribution",
+                "value": {
+                  "type": "linear"
+                }
+              },
+              {
+                "id": "custom.axisSoftMax",
+                "value": 10
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 14,
@@ -427,6 +458,17 @@
           "key": "Q-e61c3a3b-2bed-48d5-ad9c-17f0724fd382-0",
           "query": "from(bucket: \"telegraf/day\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement =~ /mqtt*/)\n  |> filter(fn: (r) => r._field == \"power\")\n  |> filter(fn: (r) => r.channel == \"0\")\n  |> truncateTimeColumn(unit: 1m)\n\n",
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "fetzerch-sunandmoon-datasource",
+            "uid": "edfb36ca-a34e-4784-8a78-d533ab115ad0"
+          },
+          "hide": false,
+          "refId": "B",
+          "target": [
+            "sun_altitude"
+          ]
         }
       ],
       "title": "Leistung",
@@ -453,7 +495,8 @@
               "Schlafzimmer": "Schlafzimmer",
               "power {channel=\"0\", name=\"mqtt_consumer\", serial=\"112483195445\"}": "Schlafzimmer",
               "power {channel=\"0\", name=\"mqtt_consumer\", serial=\"112483195771\"}": "Gästezimmer",
-              "power {channel=\"0\", name=\"mqtt_consumer\", serial=\"114491119458\"}": "Küche"
+              "power {channel=\"0\", name=\"mqtt_consumer\", serial=\"114491119458\"}": "Küche",
+              "{name=\"Sun altitude\"}": "Sonnenstand"
             }
           }
         }
@@ -720,6 +763,6 @@
   "timezone": "",
   "title": "Fensterbrettsolar",
   "uid": "a966bdab-a12b-4b07-b491-3a62941ca4c8",
-  "version": 67,
+  "version": 75,
   "weekStart": "monday"
 }
