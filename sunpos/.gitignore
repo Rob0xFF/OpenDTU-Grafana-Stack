@@ -1,0 +1,9 @@
+# Created by venv; see https://docs.python.org/3/library/venv.html
+# Ignore everything
+*
+
+# Allow only solar.py
+!solar.py
+
+# Ensure Git tracks the .gitignore file itself
+!.gitignore
